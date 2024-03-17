@@ -1,0 +1,39 @@
+The Verliog Code:
+`timescale 1ns / 1ps 
+module single_port_ram(data_in , ram_address,write_enable,clk,data_out); 
+input [7:0]data_in; 
+input [5:0] ram_address; 
+input write_enable; 
+input clk; 
+output [7:0]data_out; 
+reg [7:0] ram_memory[31:0]; // a 32 byte ( 32*8 bit) RAM 
+reg [5:0] address_register; 
+always @(posedge clk) 
+begin 
+if (write_enable) // write operation 
+ram_memory[ram_address] <= data_in; 
+else 
+address_register <= ram_address; 
+end 
+assign data_out = ram_memory[address_register]; 
+endmodule
+
+
+The Testbench:
+`timescale 1ns / 1ps 
+module single_port_ram_testbench; 
+reg [7:0]data_in; 
+reg [5:0] ram_address; 
+reg write_enable; 
+reg clk; 
+wire [7:0]data_out; 
+single_port_ram ram1(data_in , ram_address,write_enable,clk,data_out); 
+initial begin
+clk =1'b1; 
+forever #10 clk=~clk; 
+end 
+initial 
+begin 
+write_enable =1'b1; 
+#20; 
+ram_address=5'd0; 
